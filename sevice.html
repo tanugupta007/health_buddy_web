@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services - Health Buddy</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav>
+        <h1>🏥 Health Buddy</h1>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="sevice.html">Services</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="#" id="authLink">Login</a></li>
+        </ul>
+    </nav>
+
+    <section>
+        <h2>Our Medical Services</h2>
+        <p>Comprehensive healthcare services tailored to your needs. We offer a wide range of medical specialties to keep you and your family healthy.</p>
+        
+        <div class="service-grid">
+            <div class="service-card">
+                <h3>👨‍⚕️ General Checkups</h3>
+                <p>Regular health checkups and preventive care to keep you fit and healthy. Our comprehensive exams help detect health issues early.</p>
+            </div>
+            <div class="service-card">
+                <h3>👶 Pediatrics</h3>
+                <p>Comprehensive care for your children by our pediatric specialists. From newborns to adolescents, we provide expert medical care.</p>
+            </div>
+            <div class="service-card">
+                <h3>🦷 Dental Care</h3>
+                <p>From cleaning to cosmetic dentistry, we ensure your perfect smile. Our dental team provides complete oral health services.</p>
+            </div>
+            <div class="service-card">
+                <h3>❤️ Cardiology</h3>
+                <p>Advanced heart care with experienced cardiologists and state-of-the-art diagnostics. Comprehensive cardiac health management.</p>
+            </div>
+            <div class="service-card">
+                <h3>💉 Vaccination Services</h3>
+                <p>Stay protected with our comprehensive vaccination services. We offer all routine and travel vaccinations for all ages.</p>
+            </div>
+            <div class="service-card">
+                <h3>🧠 Mental Health</h3>
+                <p>Professional mental health support and counseling services. Our therapists provide compassionate care for your mental well-being.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 Health Buddy | Always for you</p>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // Check if user is logged in
+        window.addEventListener('DOMContentLoaded', async function() {
+            let currentUser = getCurrentUser();
+            
+            // Verify token if exists
+            if (currentUser || getToken()) {
+                try {
+                    const verifiedUser = await getCurrentUserAsync();
+                    if (verifiedUser) {
+                        currentUser = verifiedUser;
+                    } else {
+                        logoutUser();
+                        currentUser = null;
+                    }
+                } catch (error) {
+                    logoutUser();
+                    currentUser = null;
+                }
+            }
+            
+            const authLink = document.getElementById('authLink');
+
+            if (currentUser) {
+                authLink.textContent = 'Logout';
+                authLink.href = '#';
+                authLink.onclick = function(e) {
+                    e.preventDefault();
+                    logoutUser();
+                    window.location.href = 'login.html';
+                };
+            } else {
+                authLink.textContent = 'Login';
+                authLink.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html>

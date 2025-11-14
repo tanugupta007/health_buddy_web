@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Health Buddy</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav>
+        <h1>🏥 Health Buddy</h1>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="sevice.html">Services</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="#" id="authLink">Login</a></li>
+        </ul>
+    </nav>
+
+    <section>
+        <h2>About Health Buddy</h2>
+        <p>Health Buddy is a modern healthcare provider committed to making quality medical services accessible to everyone. Our doctors, nurses, and specialists work around the clock to ensure every patient receives personalized care.</p>
+        
+        <div class="services-grid">
+            <div class="service-card">
+                <h3>🎯 Our Mission</h3>
+                <p>To provide accessible, high-quality healthcare services that prioritize patient well-being and foster long-term health relationships.</p>
+            </div>
+            <div class="service-card">
+                <h3>👥 Our Team</h3>
+                <p>Our experienced team of healthcare professionals is dedicated to providing compassionate and expert medical care to all our patients.</p>
+            </div>
+            <div class="service-card">
+                <h3>💡 Our Values</h3>
+                <p>We believe in integrity, compassion, excellence, and patient-centered care. These values guide everything we do.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 Health Buddy | Committed to Your Wellness</p>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // Check if user is logged in
+        window.addEventListener('DOMContentLoaded', async function() {
+            let currentUser = getCurrentUser();
+            
+            // Verify token if exists
+            if (currentUser || getToken()) {
+                try {
+                    const verifiedUser = await getCurrentUserAsync();
+                    if (verifiedUser) {
+                        currentUser = verifiedUser;
+                    } else {
+                        logoutUser();
+                        currentUser = null;
+                    }
+                } catch (error) {
+                    logoutUser();
+                    currentUser = null;
+                }
+            }
+            
+            const authLink = document.getElementById('authLink');
+
+            if (currentUser) {
+                authLink.textContent = 'Logout';
+                authLink.href = '#';
+                authLink.onclick = function(e) {
+                    e.preventDefault();
+                    logoutUser();
+                    window.location.href = 'login.html';
+                };
+            } else {
+                authLink.textContent = 'Login';
+                authLink.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html>

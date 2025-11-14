@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Buddy - Your AI Health Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #667eea;
+      --gradient-primary: linear-gradient(135deg, #667eea, #764ba2);
+      --gradient-secondary: linear-gradient(135deg, #43cea2, #185a9d);
+      --text-dark: #333;
+      --text-light: #666;
+      --border-color: #ddd;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+      --shadow-lg: 0 8px 20px rgba(0,0,0,0.15);
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f2f5f9;
+      color: var(--text-dark);
+      margin: 0;
+      padding: 0;
+    }
+
+    nav {
+      background: var(--gradient-primary);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      box-shadow: var(--shadow-md);
+    }
+
+    nav h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    /* MAIN CONTENT */
+    .buddy-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .buddy-header {
+      text-align: center;
+      padding: 40px 20px;
+      background: var(--gradient-primary);
+      color: white;
+      border-radius: 20px;
+      margin-bottom: 30px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .buddy-header h1 {
+      font-size: 2.3rem;
+      margin-bottom: 10px;
+    }
+
+    .features-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .feature-card {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: var(--shadow-md);
+      transition: var(--transition);
+    }
+
+    .feature-card:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .feature-card h2 {
+      color: var(--primary-color);
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Symptom Checker */
+    .symptom-input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 1rem;
+      margin-bottom: 15px;
+    }
+
+    .symptom-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--gradient-primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .symptom-result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border-left: 4px solid var(--primary-color);
+      display: none;
+    }
+
+    .symptom-result.show {
+      display: block;
+    }
+
+    /* Chatbot */
+    .chat-container {
+      height: 500px;
+      display: flex;
+      flex-direction: column;
+      border: 2px solid var(--border-color);
+      border-radius: 15px;
+      overflow: hidden;
+      background: #f8f9fa;
+    }
+
+    .chat-header {
+      background: var(--gradient-primary);
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .language-toggle {
+      display: flex;
+      gap: 10px;
+    }
+
+    .lang-btn {
+      padding: 6px 15px;
+      border: 2px solid white;
+      background: transparent;
+      color: white;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: var(--transition);
+    }
+
+    .lang-btn.active {
+      background: white;
+      color: var(--primary-color);
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .message {
+      max-width: 70%;
+      padding: 12px 16px;
+      border-radius: 15px;
+      word-wrap: break-word;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: var(--gradient-primary);
+      color: white;
+      border-bottom-right-radius: 5px;
+    }
+
+    .message.bot {
+      align-self: flex-start;
+      background: white;
+      color: var(--text-dark);
+      border: 1px solid var(--border-color);
+      border-bottom-left-radius: 5px;
+    }
+
+    .chat-input-container {
+      display: flex;
+      padding: 15px;
+      background: white;
+      border-top: 2px solid var(--border-color);
+      gap: 10px;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid var(--border-color);
+      border-radius: 25px;
+      font-size: 1rem;
+    }
+
+    .send-btn {
+      padding: 12px 25px;
+      background: var(--gradient-primary);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    /* Media */
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .media-item img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    footer {
+      text-align: center;
+      background: var(--gradient-primary);
+      color: white;
+      padding: 15px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h1>🏥 Health Buddy</h1>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="#">Services</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Contact</a></li>
+      <li><a href="#" id="logoutBtn">Logout</a></li>
+    </ul>
+  </nav>
+
+  <div class="buddy-container">
+    <div class="buddy-header">
+      <h1>🤖 Your AI Health Assistant</h1>
+      <p>Get instant health guidance, check symptoms, and learn about diseases.</p>
+    </div>
+
+    <div class="features-grid">
+      <!-- Symptom Checker -->
+      <div class="feature-card">
+        <h2>🔍 Symptom Checker</h2>
+        <input type="text" class="symptom-input" id="symptomInput" placeholder="e.g., fever, cough, headache...">
+        <button class="symptom-btn" onclick="checkSymptoms()">Check Symptoms</button>
+        <div id="symptomResult" class="symptom-result">
+          <h4>Analysis:</h4>
+          <p id="symptomAnalysis"></p>
+          <p style="font-size:0.9rem;color:var(--text-light);"><strong>Note:</strong> Consult a doctor for professional advice.</p>
+        </div>
+      </div>
+
+      <!-- Chatbot -->
+      <div class="feature-card">
+        <h2>💬 AI Health Chatbot</h2>
+        <div class="chat-container">
+          <div class="chat-header">
+            <span>AI Health Assistant</span>
+            <div class="language-toggle">
+              <button class="lang-btn active" id="lang-en" onclick="setLanguage('en')">English</button>
+              <button class="lang-btn" id="lang-hi" onclick="setLanguage('hi')">हिन्दी</button>
+            </div>
+          </div>
+          <div class="chat-messages" id="chatMessages">
+            <div class="message bot">Hello! I'm your AI Health Assistant. How can I assist you today?</div>
+          </div>
+          <div class="chat-input-container">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Type or speak..." onkeypress="handleChatKeyPress(event)">
+            <button class="send-btn" onclick="sendMessage()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Disease Photos -->
+    <div class="feature-card">
+      <h2>📸 Disease Information</h2>
+      <div class="media-grid" id="diseasePhotos"></div>
+    </div>
+
+    <!-- Disease Videos -->
+    <div class="feature-card">
+      <h2>🎥 Health Education Videos</h2>
+      <div class="media-grid" id="diseaseVideos"></div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 Health Buddy | Your AI Health Companion</p>
+  </footer>
+
+  <script src="api.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    let currentLanguage = 'en';
+
+    const diseaseData = {
+      photos: [
+        { name: 'Common Cold', image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=300&fit=crop', description: 'Sneezing, cough, sore throat' },
+        { name: 'Fever', image: 'https://images.unsplash.com/photo-1606788075761-6e86f54f3e0b?w=400&h=300&fit=crop', description: 'High temperature and weakness' },
+      ],
+      videos: [
+        { name: 'Understanding Diabetes', link: 'https://www.youtube.com/embed/t1YQKq_LnKo' },
+        { name: 'Heart Health Tips', link: 'https://www.youtube.com/embed/Mk5zM4vJ8LQ' },
+      ]
+    };
+
+    // Logout handler
+    document.addEventListener('DOMContentLoaded', function() {
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          // Clear authentication from localStorage and redirect to login
+          logoutUser();
+          window.location.href = 'index.html';
+        });
+      }
+    });
+
+    function setLanguage(lang) {
+      currentLanguage = lang;
+      document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+      document.getElementById('lang-hi').classList.toggle('active', lang === 'hi');
+      addBotMessage(lang === 'en' ? "Language set to English." : "भाषा हिंदी में सेट की गई है।");
+    }
+
+    function handleChatKeyPress(event) {
+      if (event.key === 'Enter') sendMessage();
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      addUserMessage(msg);
+      input.value = '';
+      setTimeout(() => respondToUser(msg), 1000);
+    }
+
+    function addUserMessage(text) {
+      const chat = document.getElementById('chatMessages');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'message user';
+      msgDiv.textContent = text;
+      chat.appendChild(msgDiv);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function addBotMessage(text) {
+      const chat = document.getElementById('chatMessages');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'message bot';
+      msgDiv.textContent = text;
+      chat.appendChild(msgDiv);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function respondToUser(msg) {
+      let reply = "";
+      if (currentLanguage === 'hi') {
+        reply = "यह एक सामान्य स्वास्थ्य सलाह है। अगर लक्षण बने रहें तो डॉक्टर से संपर्क करें।";
+      } else {
+        reply = "This is a general health suggestion. Please consult a doctor if symptoms persist.";
+      }
+      addBotMessage(reply);
+      speak(reply);
+    }
+
+    // Symptom Checker Logic
+    function checkSymptoms() {
+      const symptoms = document.getElementById('symptomInput').value.toLowerCase();
+      const resultDiv = document.getElementById('symptomResult');
+      const analysis = document.getElementById('symptomAnalysis');
+
+      let result = "Please enter symptoms to get analysis.";
+      if (symptoms.includes('fever') || symptoms.includes('cough')) {
+        result = "Possible flu, cold, or viral infection. Stay hydrated and rest.";
+      } else if (symptoms.includes('headache')) {
+        result = "Might be due to stress, dehydration, or lack of sleep.";
+      }
+
+      analysis.textContent = result;
+      resultDiv.classList.add('show');
+      speak(result);
+    }
+
+    // Voice Output
+    function speak(text) {
+      const speech = new SpeechSynthesisUtterance(text);
+      speech.lang = currentLanguage === 'hi' ? 'hi-IN' : 'en-US';
+      window.speechSynthesis.speak(speech);
+    }
+
+    // Display Disease Media
+    const photoContainer = document.getElementById('diseasePhotos');
+    diseaseData.photos.forEach(d => {
+      const div = document.createElement('div');
+      div.className = 'media-item';
+      div.innerHTML = `<img src="${d.image}" alt="${d.name}"><p>${d.name}</p>`;
+      photoContainer.appendChild(div);
+    });
+
+    const videoContainer = document.getElementById('diseaseVideos');
+    diseaseData.videos.forEach(v => {
+      const div = document.createElement('div');
+      div.className = 'media-item';
+      div.innerHTML = `<iframe width="100%" height="200" src="${v.link}" frameborder="0" allowfullscreen></iframe>`;
+      videoContainer.appendChild(div);
+    });
+  </script>
+</body>
+</html>
